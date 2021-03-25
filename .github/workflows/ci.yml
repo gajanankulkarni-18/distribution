@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: amd64
-            distro: ubuntu18.04
+         # - arch: amd64
+         #   distro: ubuntu18.04
           - arch: ppc64le
             distro: ubuntu18.04
           - arch: s390x

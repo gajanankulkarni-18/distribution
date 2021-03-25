@@ -1,76 +1,41 @@
-name: CI
+#name: CI
 
-
-on:
-  push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - main
-
+on: [push]
 jobs:
-
-  build:
+  build_job:
+    # The host should always be linux
     runs-on: ubuntu-18.04
     name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
-    env:
-      DOCKER_BUILDTAGS: "include_oss include_gcs"
-      CGO_ENABLED: 1
-      GO111MODULE: "auto"
-      GOPATH: ${{ github.workspace }}
-      GOOS: linux
-      COMMIT_RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}',github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.event.after) }}
-
+    # Run steps on a matrix of 3 arch/distro combinations
     strategy:
       matrix:
         include:
+          - arch: amd64
+            distro: ubuntu18.04
+          - arch: ppc64le
+            distro: ubuntu18.04
           - arch: s390x
-          #  distro: ubuntu-18.04
-        
+            distro: ubuntu18.04
     steps:
-    - uses: actions/checkout@v2.1.0
-    - uses: uraimo/run-on-arch-action@v2.0.5
-      with:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Build artifact
+        id: build
+        with:
           arch: ${{ matrix.arch }}
-  #        distro: ${{ matrix.distro }}
-#      path: src/github.com/distribution/distribution
- #fetch-depth: 50
-          #shell: /bin/sh
-
-         # install:
-          #  apt-get update -q -y
-          
+          distro: ${{ matrix.distro }}
+          # Not required, but speeds up builds
           githubToken: ${{ github.token }}
-
-          # Set an output parameter `uname` for use in subsequent steps
+          # The shell to run commands with in the container
+          shell: /bin/sh
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+                apt-get update -q -y
+          # Produce a binary artifact and place it in the mounted volume
           run: |
-            uname -a
-            echo ::set-output name=uname::$(uname -a)
-
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15.*
-
-    - name: Dependencies
-      run: |
-          sudo apt-get -q update
-          sudo -E apt-get -yq --no-install-suggests --no-install-recommends install python2-minimal
-          cd /tmp && go get -u github.com/vbatts/git-validation
-
-    - name: Build
-      working-directory: ./src/github.com/distribution/distribution
-      run: |
-        DCO_VERBOSITY=-q script/validate/dco
-        GO111MODULE=on script/setup/install-dev-tools
-        script/validate/vendor
-        go build -i .
-        make check
-        make build
-        make binaries
-        if [ "$GOOS" = "linux" ]; then make coverage ; fi
-
-    - uses: codecov/codecov-action@v1
-      with:
-        directory: ./src/github.com/distribution/distribution
+            echo "Ran on ${matrix.arch}"

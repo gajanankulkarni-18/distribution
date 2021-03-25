@@ -36,10 +36,10 @@ jobs:
   #        distro: ${{ matrix.distro }}
 #      path: src/github.com/distribution/distribution
  #fetch-depth: 50
-          shell: /bin/sh
+          #shell: /bin/sh
 
-          install:
-            apt-get update -q -y
+         # install:
+          #  apt-get update -q -y
 
     - name: Set up Go
       uses: actions/setup-go@v2

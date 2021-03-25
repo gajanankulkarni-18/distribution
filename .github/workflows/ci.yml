@@ -30,6 +30,7 @@ jobs:
         
     steps:
     - uses: actions/checkout@v2
+    - uses: uraimo/run-on-arch-action@v2
       with:
         path: src/github.com/distribution/distribution
         fetch-depth: 50

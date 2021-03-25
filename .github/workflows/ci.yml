@@ -32,8 +32,14 @@ jobs:
     - uses: actions/checkout@v2.1.0
     - uses: uraimo/run-on-arch-action@v2.0.5
       with:
-        path: src/github.com/distribution/distribution
-        fetch-depth: 50
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+#      path: src/github.com/distribution/distribution
+ #fetch-depth: 50
+          shell: /bin/sh
+
+          install:
+            apt-get update -q -y
 
     - name: Set up Go
       uses: actions/setup-go@v2

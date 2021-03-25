@@ -26,14 +26,14 @@ jobs:
       matrix:
         include:
           - arch: s390x
-            distro: ubuntu-18.04
+          #  distro: ubuntu-18.04
         
     steps:
     - uses: actions/checkout@v2.1.0
     - uses: uraimo/run-on-arch-action@v2.0.5
       with:
           arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
+  #        distro: ${{ matrix.distro }}
 #      path: src/github.com/distribution/distribution
  #fetch-depth: 50
           shell: /bin/sh

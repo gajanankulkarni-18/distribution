@@ -13,6 +13,7 @@ jobs:
 
   build:
     runs-on: ubuntu-18.04
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
     env:
       DOCKER_BUILDTAGS: "include_oss include_gcs"
       CGO_ENABLED: 1
@@ -21,6 +22,12 @@ jobs:
       GOOS: linux
       COMMIT_RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}',github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.event.after) }}
 
+    strategy:
+      matrix:
+        include:
+          - arch: s390x
+            distro: ubuntu-18.04
+        
     steps:
     - uses: actions/checkout@v2
       with:

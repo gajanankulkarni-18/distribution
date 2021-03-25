@@ -40,6 +40,13 @@ jobs:
 
          # install:
           #  apt-get update -q -y
+          
+          githubToken: ${{ github.token }}
+
+          # Set an output parameter `uname` for use in subsequent steps
+          run: |
+            uname -a
+            echo ::set-output name=uname::$(uname -a)
 
     - name: Set up Go
       uses: actions/setup-go@v2

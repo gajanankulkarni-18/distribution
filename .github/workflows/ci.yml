@@ -2,6 +2,16 @@
 
 on: [push]
 jobs:
+  build:
+    runs-on: ubuntu-18.04
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+    env:
+      DOCKER_BUILDTAGS: "include_oss include_gcs"
+      CGO_ENABLED: 1
+      GO111MODULE: "auto"
+      GOPATH: ${{ github.workspace }}
+      GOOS: linux
+      COMMIT_RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}',github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.event.after) }}
   build_job:
     # The host should always be linux
     runs-on: ubuntu-18.04

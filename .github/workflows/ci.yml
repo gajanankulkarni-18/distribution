@@ -39,3 +39,5 @@ jobs:
           # Produce a binary artifact and place it in the mounted volume
           run: |
             echo "Ran on ${matrix.arch}"
+            uname -a
+            echo ::set-output name=uname::$(uname -a)
